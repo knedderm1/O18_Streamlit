@@ -236,6 +236,7 @@ def run_simulation(parms):
 parms = {}
 parms = reset()
 param_values = np.array(parms, dtype=float)
+st.session_state.setdefault("param_values", param_values)
 
 st.set_page_config(page_title="Single Graph", page_icon="📈")
 
