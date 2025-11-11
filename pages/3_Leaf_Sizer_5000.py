@@ -118,40 +118,48 @@ if submitted:
         with col1:
             st.image(img_f, channels="BGR", caption="Uploaded Image", width=200)
 
-        plt.figure(figsize=(8, 5))
-
         kernel_sizes = list(range(3, 21, 2))
+        blur_values = [3, 5, 7]
+        leaf_iters = [1, 2, 3]
         results = []
         for k in kernel_sizes:
-            try:
-                res = calc_area(img_f, kernel_size=k, ref_size=ref_size)
-                results.append(res[0])
-                if (k==5):
-                    leaf_mask = res[1]
-                    mask = res[2]
+            for b in blur_values:
+                for l in leaf_iters:
+                    try:
+                        res = calc_area(img_f, kernel_size=k, blur=b, leaf_iter=l, ref_size=ref_size)
+                        results.append({
+                            "Kernel Size": k,
+                            "Blur": b,
+                            "Leaf Iterations": l,
+                            "Leaf Area": round(res[0], 2)
+                        })
+                        if (k==5 and b==5 and l==2):
+                            leaf_mask = res[1]
+                            mask = res[2]
 
-            except Exception as e:
-                print(f"Error with {img_f}, kernel={k}: {e}")
-                results.append(0)
+                    except Exception as e:
+                        results.append({
+                            "Kernel Size": k,
+                            "Blur": b,
+                            "Leaf Iterations": l,
+                            "Leaf Area": 0
+                        })
 
         with col2:
             st.image(mask, caption="Reference Square", width=200)
         with col3:
             st.image(leaf_mask, caption="Leaf Mask", width=200)
-        df = pd.DataFrame({
-            "Kernel Size": kernel_sizes,
-            "Leaf Area": [f"{r:.2f}" for r in results]  # format numbers to 2 decimals
-        })
+        df = pd.DataFrame(results)
         st.dataframe(df)  # allows sorting, scrolling, resizing
 
-        plt.plot(kernel_sizes, results, marker='o')
+        default_row = df[
+            (df["Kernel Size"] == 5) &
+            (df["Blur"] == 5) &
+            (df["Leaf Iterations"] == 2)
+            ]
 
-        # Finalize combined plot
-        plt.title('Effect of Morphological Kernel Size on Measured Leaf Area')
-        plt.xlabel('Kernel Size (pixels)')
-        plt.ylabel('Relative Leaf Area')
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
-
+        mean_area = df["Leaf Area"].mean()
+        std_area = df["Leaf Area"].std()
+        st.write(f"Base Area: {default_row["Leaf Area"].values[0]:.2f}")
+        st.write(f"Estimated leaf area: {mean_area:.2f} +/- {std_area:.2f}")
 
