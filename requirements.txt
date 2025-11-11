@@ -1,8 +1,9 @@
-streamlit>=1.25.0
+esstreamlit>=1.25.0
 numpy
 scipy
 pandas
 matplotlib
-opencv-python
+opencv-python-headless
+
 
 
