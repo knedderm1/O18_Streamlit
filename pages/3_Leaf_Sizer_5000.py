@@ -141,6 +141,7 @@ if submitted:
                                 "Kernel Size": k,
                                 "Blur": b,
                                 "Leaf Iterations": l,
+                                "Rotation Angle": r,
                                 "Leaf Area": round(res[0], 2)
                             })
                             if (k==5 and b==5 and l==2 and r == 0):
@@ -152,7 +153,7 @@ if submitted:
                                 "Kernel Size": k,
                                 "Blur": b,
                                 "Leaf Iterations": l,
-                                "Rotation": r,
+                                "Rotation Angle": r,
                                 "Leaf Area": 0
                             })
 
@@ -173,4 +174,5 @@ if submitted:
         std_area = df["Leaf Area"].std()
         st.write(f"Base Area: {default_row["Leaf Area"].values[0]:.2f}")
         st.write(f"Estimated leaf area: {mean_area:.2f} +/- {std_area:.2f}")
+
 
