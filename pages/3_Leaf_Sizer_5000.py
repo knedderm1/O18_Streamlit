@@ -91,7 +91,14 @@ col1, col2, col3 = st.columns(3)
 with st.form("parameters_form"):
     st.header("Reference Size and Image")
 
-    ref_size = st.slider("Reference Square Size (cm^2)", 1, 100, 1)
+    ref_size = st.number_input(
+        "Reference Square Size (cm²)",  # label
+        min_value=0.1,  # minimum allowed value
+        max_value=100.0,  # maximum allowed value
+        value=2.0,  # default value
+        step=0.1,  # step size when using the arrows
+        format="%.2f"  # display format with 2 decimals
+    )
 
     img_f = st.file_uploader(label="Input image", type=None, accept_multiple_files=False,
                            key=None, help=None,
@@ -146,4 +153,5 @@ if submitted:
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+
 
