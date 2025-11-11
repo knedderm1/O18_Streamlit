@@ -3,7 +3,8 @@ numpy
 scipy
 pandas
 matplotlib
-opencv-python
+opencv-python-headless
+
 
 
 
