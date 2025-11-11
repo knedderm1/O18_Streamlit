@@ -51,7 +51,6 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
     mask_leaf = cv2.morphologyEx(mask_leaf, cv2.MORPH_CLOSE, kernel, iterations=leaf_iter+1)
     mask_leaf = cv2.morphologyEx(mask_leaf, cv2.MORPH_OPEN, kernel, iterations=leaf_iter)
 
-    cv2.imwrite("debug_mask_leaf.jpg", mask_leaf)
 
     # --- 5️⃣ Get largest contour ---
     contours, _ = cv2.findContours(mask_leaf, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -78,7 +77,6 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
     # Draw contours for visual check
     img_contours = img.copy()
     cv2.drawContours(img_contours, contours, -1, (0, 255, 0), 2)
-    cv2.imwrite("debug_contours.jpg", img_contours)
 
     # Calculate areas of all contours
     areas = [(cv2.contourArea(c), c) for c in contours]
@@ -148,3 +146,4 @@ if submitted:
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+
