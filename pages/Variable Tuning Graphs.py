@@ -245,8 +245,10 @@ st.markdown("Variable Tuning Graph")
 st.sidebar.header("Variable Tuning Graphs")
 
 if st.button("Reset"):
-    parms = reset()
-    st.session_state.param_values = np.array(parms, dtype=float)
+    defaults = reset()
+    st.session_state.param_values = np.array(defaults, dtype=float)
+    for i, val in enumerate(defaults):
+        st.session_state[f"param_{i}"] = val
 with st.form("parameters_form"):
     st.header("Model Parameters")
 
@@ -277,6 +279,7 @@ with st.form("parameters_form"):
             max_value=9999.0,
             value=float(st.session_state.param_values[idx]),  # <- use session_state directly
             step=1.0,
+            key=f"param_{idx}",
         )
     submitted = st.form_submit_button("Run Simulation")
 
@@ -329,8 +332,6 @@ if submitted:
         ax.set_ylabel('Seawater $\\delta^{18}$O')
         plt.tight_layout()
         st.pyplot(fig)
-
-
 
 
 
