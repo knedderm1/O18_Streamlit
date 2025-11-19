@@ -283,7 +283,7 @@ if submitted:
     with st.spinner("Running simulation..."):
         st.session_state.param_values = working_values
         print("SUBMIT" + str(st.session_state.param_values))
-        parms = st.session_state.param_values.tolist()
+        parms = working_values
         early, middle, late, twostep, time_new = run_simulation(parms)
         fig, ax = plt.subplots(figsize=(12, 6))
         # Reference points
@@ -328,4 +328,5 @@ if submitted:
         ax.set_ylabel('Seawater $\\delta^{18}$O')
         plt.tight_layout()
         st.pyplot(fig)
+
 
