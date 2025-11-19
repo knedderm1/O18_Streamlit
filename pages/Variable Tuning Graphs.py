@@ -238,11 +238,11 @@ parms = reset()
 param_values = np.array(parms, dtype=float)
 st.session_state.setdefault("param_values", param_values)
 
-st.set_page_config(page_title="Single Graph", page_icon="📈")
+st.set_page_config(page_title="Variable Graph", page_icon="📈")
 
 st.title("Interactive D18O Model")
-st.markdown("Single Graph")
-st.sidebar.header("Single Graphs")
+st.markdown("Variable Tuning Graph")
+st.sidebar.header("Variable Tuning Graphs")
 
 if st.button("Reset"):
     st.session_state.param_values = np.array(reset(), dtype=float)
@@ -328,3 +328,4 @@ if submitted:
         ax.set_ylabel('Seawater $\\delta^{18}$O')
         plt.tight_layout()
         st.pyplot(fig)
+
