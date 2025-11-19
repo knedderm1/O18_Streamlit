@@ -246,6 +246,7 @@ st.sidebar.header("Variable Tuning Graphs")
 
 if st.button("Reset"):
     st.session_state.param_values = np.array(reset(), dtype=float)
+    working_values = st.session_state.param_values
 with st.form("parameters_form"):
     st.header("Model Parameters")
 
@@ -328,6 +329,7 @@ if submitted:
         ax.set_ylabel('Seawater $\\delta^{18}$O')
         plt.tight_layout()
         st.pyplot(fig)
+
 
 
 
