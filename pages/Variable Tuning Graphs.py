@@ -281,7 +281,7 @@ with st.form("parameters_form"):
 
 if submitted:
     with st.spinner("Running simulation..."):
-        st.session_state.param_values = working_values
+        # st.session_state.param_values = working_values
         print("SUBMIT" + str(st.session_state.param_values))
         parms = working_values
         early, middle, late, twostep, time_new = run_simulation(parms)
@@ -328,5 +328,6 @@ if submitted:
         ax.set_ylabel('Seawater $\\delta^{18}$O')
         plt.tight_layout()
         st.pyplot(fig)
+
 
 
