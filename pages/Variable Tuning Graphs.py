@@ -245,8 +245,8 @@ st.markdown("Variable Tuning Graph")
 st.sidebar.header("Variable Tuning Graphs")
 
 if st.button("Reset"):
-    st.session_state.param_values = np.array(reset(), dtype=float)
-    working_values = st.session_state.param_values
+    parms = reset()
+    st.session_state.param_values = np.array(parms, dtype=float)
 with st.form("parameters_form"):
     st.header("Model Parameters")
 
@@ -264,7 +264,7 @@ with st.form("parameters_form"):
         "Water Recycling Fract.": 9,
     }
     st.write("Enter integer values for each parameter:")
-
+w
     cols = st.columns(2)
     working_values = st.session_state.param_values.copy()
 
@@ -329,6 +329,7 @@ if submitted:
         ax.set_ylabel('Seawater $\\delta^{18}$O')
         plt.tight_layout()
         st.pyplot(fig)
+
 
 
 
