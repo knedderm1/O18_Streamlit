@@ -85,7 +85,7 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
     # Calculate areas of all contours
     areas = [(cv2.contourArea(c), c) for c in contours]
     areas = sorted(areas, key=lambda x: x[0], reverse=True)
-    return ref_size * leaf_area_px/areas[0][0], mask_leaf, mask
+    return (ref_size * leaf_area_px/areas[0][0] - ref_size), mask_leaf, mask
 
 def rotate_image(img, angle):
     h, w = img.shape[:2]
@@ -132,7 +132,7 @@ if submitted:
         kernel_sizes = [3, 5, 7]
         blur_values = [3, 5, 7]
         leaf_iters = [1, 2, 3]
-        rotation_angles = [-30, -15, 0, 15, 30]
+        rotation_angles = [-15, 0, 15]
         results = []
         for k in kernel_sizes:
             for b in blur_values:
@@ -178,6 +178,7 @@ if submitted:
         std_area = df["Leaf Area"].std()
         st.write(f"Base Area: {default_row["Leaf Area"].values[0]:.2f}")
         st.write(f"Estimated leaf area: {mean_area:.2f} +/- {std_area:.2f}")
+
 
 
 
