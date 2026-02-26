@@ -113,7 +113,8 @@ with st.form("parameters_form"):
 
 if submitted:
     with st.spinner("Calculating Leaf Size..."):
-        for img_f in images:
+        for i in range(len(images)):
+            img_f = images[i]
             name = img_f.name
             file_bytes = np.asarray(bytearray(img_f.read()), dtype=np.uint8)
             img_f = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
@@ -169,7 +170,7 @@ if submitted:
                                 "File Name": name,
                                 "Mean_Area": mean_area,
                                 "STD": std_area,
-                                "Default Area": default_row["Leaf Area"],
+                                "Default Area": default_row["Leaf Area"].values[0],
                             })
 
         df = pd.DataFrame(results_results)
