@@ -86,7 +86,7 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
     areas = sorted(areas, key=lambda x: x[0], reverse=True)
     return (ref_size * leaf_area_px)/areas[0][0] - ref_size, mask_leaf, mask
 
-st.title("Leaf-Sizer-5000 Ensemble 1003")
+st.title("Leaf-Sizer-5000 Ensemble 1005")
 st.markdown("How Big is my Leaf?")
 st.sidebar.header("Leaf Sizer 5000")
 col1, col2, col3 = st.columns(3)
@@ -175,4 +175,5 @@ if submitted:
 
         df = pd.DataFrame(results_results)
         st.dataframe(df)  # allows sorting, scrolling, resizing
+
 
