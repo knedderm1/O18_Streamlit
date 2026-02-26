@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Leaf Sizer 5005", page_icon="🍂")
+st.set_page_config(page_title="Leaf Size 5000", page_icon="🍂")
 def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
 
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -61,12 +61,15 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
 
     print(f"Leaf area (pixels): {leaf_area_px:.2f}")
 
-    lower_orange = np.array([5, 100, 100])
-    upper_orange = np.array([25, 255, 255])
+    # lower_orange = np.array([5, 100, 100])
+    # upper_orange = np.array([25, 255, 255])
+
+    lower_turquoise = np.array([70, 60, 80])
+    upper_turquoise = np.array([100, 255, 255])
 
     # Create a mask for orange areas
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(hsv, lower_orange, upper_orange)
+    mask = cv2.inRange(hsv, lower_turquoise, upper_turquoise)
 
     # Morphological cleaning
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
@@ -174,5 +177,4 @@ if submitted:
         std_area = df["Leaf Area"].std()
         st.write(f"Base Area: {default_row["Leaf Area"].values[0]:.2f}")
         st.write(f"Estimated leaf area: {mean_area:.2f} +/- {std_area:.2f}")
-
 
