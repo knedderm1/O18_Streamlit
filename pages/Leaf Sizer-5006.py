@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Leaf Size 5000", page_icon="🍂")
+st.set_page_config(page_title="Leaf Size 5006", page_icon="🍂")
 def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
 
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -86,13 +86,6 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
     areas = sorted(areas, key=lambda x: x[0], reverse=True)
     return (ref_size * leaf_area_px)/areas[0][0] - ref_size, mask_leaf, mask
 
-def rotate_image(img, angle):
-    h, w = img.shape[:2]
-    center = (w // 2, h // 2)
-    M = cv2.getRotationMatrix2D(center, angle, 1.0)
-    rotated = cv2.warpAffine(img, M, (w, h))
-    return rotated
-
 st.title("Leaf-Sizer-5000")
 st.markdown("How Big is my Leaf?")
 st.sidebar.header("Leaf Sizer 5000")
@@ -131,34 +124,29 @@ if submitted:
         kernel_sizes = [3, 5, 7]
         blur_values = [3, 5, 7]
         leaf_iters = [1, 2, 3]
-        rotation_angles = [-30, -15, 0, 15, 30]
         results = []
         for k in kernel_sizes:
             for b in blur_values:
                 for l in leaf_iters:
-                    for r in rotation_angles:
-                        try:
-                            img_s = rotate_image(img_f, r)
-                            res = calc_area(img_s, kernel_size=k, blur=b, leaf_iter=l, ref_size=ref_size)
-                            results.append({
-                                "Kernel Size": k,
-                                "Blur": b,
-                                "Leaf Iterations": l,
-                                "Rotation Angle": r,
-                                "Leaf Area": round(res[0], 2)
-                            })
-                            if (k==5 and b==5 and l==2 and r == 0):
-                                leaf_mask = res[1]
-                                mask = res[2]
+                    try:
+                        res = calc_area(img_f, kernel_size=k, blur=b, leaf_iter=l, ref_size=ref_size)
+                        results.append({
+                            "Kernel Size": k,
+                            "Blur": b,
+                            "Leaf Iterations": l,
+                            "Leaf Area": round(res[0], 2)
+                        })
+                        if (k==5 and b==5 and l==2):
+                            leaf_mask = res[1]
+                            mask = res[2]
 
-                        except Exception as e:
-                            results.append({
-                                "Kernel Size": k,
-                                "Blur": b,
-                                "Leaf Iterations": l,
-                                "Rotation": r,
-                                "Leaf Area": 0
-                            })
+                    except Exception as e:
+                        results.append({
+                            "Kernel Size": k,
+                            "Blur": b,
+                            "Leaf Iterations": l,
+                            "Leaf Area": 0
+                        })
 
         with col2:
             st.image(mask, caption="Reference Square", width=200)
