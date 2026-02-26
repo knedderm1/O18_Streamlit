@@ -11,7 +11,7 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # --- 1️⃣ Estimate background color & brightness from border ---
+    # --- 1 Estimate background color & brightness from border ---
     border = 20
     h, w = img.shape[:2]
     bg_samples = np.concatenate([
@@ -26,7 +26,7 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
 
     bg_gray_mean = np.mean(gray[:border, :])  # approximate brightness
 
-    # --- 2️⃣ Compute color + brightness deviation from background ---
+    # --- 2 Compute color + brightness deviation from background ---
     diff = img.astype(np.float32) - bg_mean  # shape (h, w, 3)
     color_diff = np.sqrt(np.sum(diff ** 2, axis=2))  # per-pixel Euclidean distance
     gray_diff = np.abs(gray.astype(np.float32) - bg_gray_mean)
@@ -38,7 +38,7 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
     # Combine both signals (color + brightness)
     combined = cv2.addWeighted(color_diff_norm, 0.6, gray_diff_norm, 0.4, 0)
 
-    # --- 3️⃣ Adaptive threshold ---
+    # --- 3️ Adaptive threshold ---
     combined_blur = cv2.GaussianBlur(combined.astype(np.uint8), (blur, blur), 0)
     _, mask_leaf = cv2.threshold(combined_blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
@@ -46,16 +46,16 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
     if np.mean(gray[mask_leaf > 0]) > np.mean(gray[mask_leaf == 0]):
         mask_leaf = cv2.bitwise_not(mask_leaf)
 
-    # --- 4️⃣ Morphological cleanup ---
+    # --- 4️ Morphological cleanup ---
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
     mask_leaf = cv2.morphologyEx(mask_leaf, cv2.MORPH_CLOSE, kernel, iterations=leaf_iter+1)
     mask_leaf = cv2.morphologyEx(mask_leaf, cv2.MORPH_OPEN, kernel, iterations=leaf_iter)
 
 
-    # --- 5️⃣ Get largest contour ---
+    # --- 5️ Get largest contour ---
     contours, _ = cv2.findContours(mask_leaf, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if contours:
-        leaf_area_px = max(cv2.contourArea(c) for c in contours)
+        leaf_area_px = sum(cv2.contourArea(c) for c in contours)
     else:
         leaf_area_px = 0
 
@@ -64,13 +64,9 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
     lower_orange = np.array([5, 100, 100])
     upper_orange = np.array([25, 255, 255])
 
-    lower_turquoise = np.array([70, 60, 80])
-    upper_turquoise = np.array([100, 255, 255])
-
-
     # Create a mask for orange areas
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(hsv, lower_turquoise, upper_turquoise)
+    mask = cv2.inRange(hsv, lower_orange, upper_orange)
 
     # Morphological cleaning
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
@@ -85,7 +81,7 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
     # Calculate areas of all contours
     areas = [(cv2.contourArea(c), c) for c in contours]
     areas = sorted(areas, key=lambda x: x[0], reverse=True)
-    return (ref_size * leaf_area_px/areas[0][0] - ref_size), mask_leaf, mask
+    return (ref_size * leaf_area_px)/areas[0][0] - ref_size, mask_leaf, mask
 
 def rotate_image(img, angle):
     h, w = img.shape[:2]
@@ -106,7 +102,7 @@ with st.form("parameters_form"):
         "Reference Square Size (cm²)",  # label
         min_value=0.1,  # minimum allowed value
         max_value=100.0,  # maximum allowed value
-        value=2.0,  # default value
+        value=4.0,  # default value
         step=0.1,  # step size when using the arrows
         format="%.2f"  # display format with 2 decimals
     )
@@ -132,7 +128,7 @@ if submitted:
         kernel_sizes = [3, 5, 7]
         blur_values = [3, 5, 7]
         leaf_iters = [1, 2, 3]
-        rotation_angles = [-15, 0, 15]
+        rotation_angles = [-30, -15, 0, 15, 30]
         results = []
         for k in kernel_sizes:
             for b in blur_values:
@@ -157,7 +153,7 @@ if submitted:
                                 "Kernel Size": k,
                                 "Blur": b,
                                 "Leaf Iterations": l,
-                                "Rotation Angle": r,
+                                "Rotation": r,
                                 "Leaf Area": 0
                             })
 
@@ -178,7 +174,4 @@ if submitted:
         std_area = df["Leaf Area"].std()
         st.write(f"Base Area: {default_row["Leaf Area"].values[0]:.2f}")
         st.write(f"Estimated leaf area: {mean_area:.2f} +/- {std_area:.2f}")
-
-
-
 
