@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Leaf Size 5000", page_icon="🍂")
+st.set_page_config(page_title="Leaf Sizer 5005", page_icon="🍂")
 def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
 
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
