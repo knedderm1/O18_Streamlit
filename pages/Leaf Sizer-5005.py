@@ -175,3 +175,4 @@ if submitted:
         st.write(f"Base Area: {default_row["Leaf Area"].values[0]:.2f}")
         st.write(f"Estimated leaf area: {mean_area:.2f} +/- {std_area:.2f}")
 
+
