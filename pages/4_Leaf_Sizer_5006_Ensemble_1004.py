@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Leaf Size 5006 Ensemble 1003", page_icon="🍂🍂")
+st.set_page_config(page_title="Leaf Size 5006 Ensemble 1004", page_icon="🍂🍂")
 def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
 
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -86,7 +86,7 @@ def calc_area(img, kernel_size=5, blur=5, leaf_iter=2, ref_size=2):
     areas = sorted(areas, key=lambda x: x[0], reverse=True)
     return (ref_size * leaf_area_px)/areas[0][0] - ref_size, mask_leaf, mask
 
-st.title("Leaf-Sizer-5000 Ensemble 1003")
+st.title("Leaf-Sizer-5006 Ensemble 1004")
 st.markdown("How Big is my Leaf?")
 st.sidebar.header("Leaf Sizer 5000")
 col1, col2, col3 = st.columns(3)
@@ -175,3 +175,4 @@ if submitted:
 
         df = pd.DataFrame(results_results)
         st.dataframe(df)  # allows sorting, scrolling, resizing
+
