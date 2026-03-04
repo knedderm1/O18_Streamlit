@@ -64,6 +64,11 @@ def reset(model):
         parms = [k_weath, k_hi_lo_t, delt_weath, delt_hi_and_l, 0, 0, 0, 0, 0, 0]
     return parms
 
+def on_model_change():
+    model = st.session_state.current_model
+    defaults = np.array(reset(model), dtype=float)
+    st.session_state.param_values = defaults
+
 parms = {}
 parms = reset("Muelenbach")
 param_values = np.array(parms, dtype=float)
@@ -77,7 +82,9 @@ st.sidebar.header("Variable Tuning Graphs")
 
 model = st.radio(
     "Select a model",
-    ["Muelenbach", "Gregory"]
+    ["Muelenbach", "Gregory"],
+    key="current_model",
+    on_change=on_model_change
 )
 if st.button("Reset"):
     defaults = reset(model)
@@ -177,3 +184,7 @@ if submitted:
         ax.set_ylabel('Seawater $\\delta^{18}$O')
         plt.tight_layout()
         st.pyplot(fig)
+
+
+
+
