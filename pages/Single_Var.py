@@ -23,7 +23,6 @@ from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.colors import to_rgb, ListedColormap
 from matplotlib.colors import PowerNorm
 import matplotlib.style as mplstyle
-
 font = {'family' : 'sans-serif',
         'weight' : 'bold',
         'size'   : 16}
@@ -64,12 +63,22 @@ def reset(model):
         parms = [k_weath, k_hi_lo_t, delt_weath, delt_hi_and_l]
     return parms
 
-parms = {}
-parms = reset("Muelenbach")
-param_values = np.array(parms, dtype=float)
-st.session_state.setdefault("param_values", param_values)
+st.set_page_config(page_title="Variable Graph", page_icon="📈")
+if "param_values" not in st.session_state:
+    st.session_state.param_values = np.array(reset("Muelenbach"), dtype=float)
 
 st.set_page_config(page_title="Variable Graph", page_icon="📈")
+
+st.set_page_config(page_title="Variable Graph", page_icon="📈")
+
+if "current_model" not in st.session_state:
+    st.session_state.current_model = "Muelenbach"
+
+if "param_values" not in st.session_state:
+    st.session_state.param_values = np.array(
+        reset(st.session_state.current_model),
+        dtype=float
+    )
 
 st.title("Interactive D18O Model")
 st.markdown("Variable Tuning Graph")
