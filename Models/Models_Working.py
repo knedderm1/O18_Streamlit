@@ -172,32 +172,25 @@ def run_Muelenbach(parms):
     bb = 0.4
     bb2 = 0.1
 
-    Delt_hiT_change = (Delt_hiT - Delt_hiT_mid) + (Delt_hiT - Delt_hiT_mid) * 0.5 * (
+    Delt_hiT_change = (Delt_hiT - hiT_mid) + (delt_hi_and_l - hiT_mid) * .5 * (
             1 + np.tanh((np.subtract(time, weath_time_on) / bb))) - 1
-    Delt_hiT_change_late = (Delt_hiT - Delt_hiT_mid) + (Delt_hiT - Delt_hiT_mid) * 0.5 * (
+    Delt_hiT_change_late = (Delt_hiT - hiT_mid) + (delt_hi_and_l - hiT_mid) * .5 * (
             1 + np.tanh((np.subtract(time, weath_time_late) / bb))) - 1
-    Delt_hiT_twostep = (Delt_hiT - Delt_hiT_mid) + (Delt_hiT - Delt_hiT_mid) * 0.5 * (
+    Delt_hiT_twostep = (Delt_hiT - hiT_mid) + (delt_hi_and_l - hiT_mid) * .5 * (  # TODO .5 here
             1 + np.tanh((np.subtract(time, weath_time_on_twostep) / bb2))) - 1
-
-    k_growth_change = 0.5 * k_growth * (1 + np.tanh((np.subtract(time, weath_time_on) / bb)))
-    k_growth_late = 0.5 * k_growth * (1 + np.tanh((np.subtract(time, weath_time_late) / bb)))
-    k_growth_early = 0.5 * k_growth * (1 + np.tanh((np.subtract(time, weath_time_early) / bb)))
 
     k_weathering_change = 0.5 * k_weath * (1 + np.tanh((np.subtract(time, weath_time_on) / bb)))
     k_weathering_late = 0.5 * k_weath * (1 + np.tanh((np.subtract(time, weath_time_late) / bb)))
     k_weathering_early = 0.5 * k_weath * (1 + np.tanh((np.subtract(time, weath_time_early) / bb)))
-
     two_step_time = 4.5 - 2
-    k_growth_twostep = 0.5 * k_growth * (1 + np.tanh((np.subtract(time, weath_time_on_twostep) / (bb2))))
+    # k_growth_twostep = 0.5 * k_growth * (1 + np.tanh((np.subtract(time, weath_time_on_twostep) / (bb2))))
 
     weath_time_mid = 4.5 - 1.65
     k_weathering_mid = 0.5 * k_weath * (1 + np.tanh((np.subtract(time, weath_time_mid) / bb)))
     k_weathering_two_step = 0.5 * k_weath * (1 + np.tanh((np.subtract(time, weath_time_mid) / bb2)))
 
-    k_loT_change = k_loT * np.ones(time.size)  # keep it the same
-    k_hiT_change = k_hiT * np.ones(time.size)
-
-    k_water_change = k_W_recycling * np.ones(time.size)  #
+    k_hi_lo_change = (k_hi_lo_t) * np.ones(time.size)
+    k_weath = (k_weath) * np.ones(time.size)
 
     del_steady_change = np.zeros(time.size)
     del_steady_early = np.zeros(time.size)
@@ -210,76 +203,62 @@ def run_Muelenbach(parms):
     k_sum_twostep = np.zeros(time.size)
 
     for istep in range(0, time.size):
-        top = np.sum([k_weathering_change[istep] * (del_graniteo[istep] - Delt_weath), \
-                      k_growth_change[istep] * (del_graniteo[istep] - Delt_growth), \
-                      k_hiT_change[istep] * (del_basalto - Delt_hiT_change[istep]), \
-                      k_loT_change[istep] * (del_basalto - Delt_lowT), \
-                      k_water_change[istep] * (del_WR - Delt_water_recycling)])
-        top_two_step = np.sum([k_weathering_two_step[istep] * (del_graniteo[istep] - Delt_weath), \
-                               k_growth_twostep[istep] * (del_graniteo[istep] - Delt_growth), \
-                               k_hiT_change[istep] * (del_basalto - Delt_hiT_twostep[istep]), \
-                               k_loT_change[istep] * (del_basalto - Delt_lowT), \
-                               k_water_change[istep] * (del_WR - Delt_water_recycling)])
-        top_early = np.sum([k_weathering_early[istep] * (del_graniteo[istep] - Delt_weath), \
-                            k_growth_early[istep] * (del_graniteo[istep] - Delt_growth), \
-                            k_hiT_change[istep] * (del_basalto - Delt_hiT), \
-                            k_loT_change[istep] * (del_basalto - Delt_lowT), \
-                            k_water_change[istep] * (del_WR - Delt_water_recycling)])
-        top_late = np.sum([k_weathering_late[istep] * (del_graniteo[istep] - Delt_weath), \
-                           k_growth_late[istep] * (del_graniteo[istep] - Delt_growth), \
-                           k_hiT_change[istep] * (del_basalto - Delt_hiT_change_late[istep]), \
-                           k_loT_change[istep] * (del_basalto - Delt_lowT), \
-                           k_water_change[istep] * (del_WR - Delt_water_recycling)])
+        top = np.sum([k_weath[istep] * (del_graniteo[istep] - delt_weath),
+                      k_hi_lo_change[istep] * (del_basalto - Delt_hiT_change[istep])
+                      ])
+        top_two_step = np.sum([k_weathering_two_step[istep] * (del_graniteo[istep] - delt_weath),
+                               k_hi_lo_change[istep] * (del_basalto - Delt_hiT_twostep[istep])
+                               ])
+        top_early = np.sum([k_weathering_early[istep] * (del_graniteo[istep] - delt_weath),
+                            k_hi_lo_change[istep] * (del_basalto - delt_hi_and_l)
+                            ])
+        top_late = np.sum([k_weathering_late[istep] * (del_graniteo[istep] - delt_weath),
+                           k_hi_lo_change[istep] * (del_basalto - Delt_hiT_change_late[istep])])
 
         k_sum[istep] = np.sum(
-            [k_weathering_change[istep], k_growth_change[istep], k_hiT_change[istep], k_loT_change[istep],
-             k_water_change[istep]])
+            [k_weath[istep], k_hi_lo_change[istep]])
         k_sum_early[istep] = np.sum(
-            [k_weathering_early[istep], k_growth_early[istep], k_hiT_change[istep], k_loT_change[istep],
-             k_water_change[istep]])
+            [k_weathering_early[istep], k_hi_lo_change[istep]])
         k_sum_late[istep] = np.sum(
-            [k_weathering_late[istep], k_growth_late[istep], k_hiT_change[istep], k_loT_change[istep],
-             k_water_change[istep]])
+            [k_weathering_late[istep], k_hi_lo_change[istep]])
         k_sum_twostep[istep] = np.sum(
-            [k_weathering_two_step[istep], k_growth_twostep[istep], k_hiT_change[istep], k_loT_change[istep],
-             k_water_change[istep]])
+            [k_weathering_two_step[istep], k_hi_lo_change[istep]])
 
         del_steady_change[istep] = top / k_sum[istep]
         del_steady_early[istep] = top_early / k_sum_early[istep]
         del_steady_late[istep] = top_late / k_sum_late[istep]
         del_steady_two_step[istep] = top_two_step / k_sum_twostep[istep]
 
-        # calculate dW at for each steady state
-        time_new = np.linspace(0.01, 4.5, num=1000)
-        f1 = sp.interpolate.interp1d(time, del_steady_change)
-        f2 = sp.interpolate.interp1d(time, k_sum)
-        steady_interp = f1(time_new)
-        k_sum_interp = f2(time_new)
-        f1_late = sp.interpolate.interp1d(time, del_steady_late)
-        f2_late = sp.interpolate.interp1d(time, k_sum_late)
-        steady_interp_late = f1_late(time_new)
-        k_sum_interp_late = f2_late(time_new)
+    # calculate dW at for each steady state
+    time_new = np.linspace(0.01, 4.5, num=1000)
+    f1 = sp.interpolate.interp1d(time, del_steady_change)
+    f2 = sp.interpolate.interp1d(time, k_sum)
+    steady_interp = f1(time_new)
+    k_sum_interp = f2(time_new)
+    f1_late = sp.interpolate.interp1d(time, del_steady_late)
+    f2_late = sp.interpolate.interp1d(time, k_sum_late)
+    steady_interp_late = f1_late(time_new)
+    k_sum_interp_late = f2_late(time_new)
 
-        steady_interp_late = f1_late(time_new)
-        k_sum_interp_late = f2_late(time_new)
+    steady_interp_late = f1_late(time_new)
+    k_sum_interp_late = f2_late(time_new)
 
-        f1_early = sp.interpolate.interp1d(time, del_steady_early)
-        f2_early = sp.interpolate.interp1d(time, k_sum_early)
-        steady_interp_early = f1_early(time_new)
-        k_sum_interp_early = f2_early(time_new)
+    f1_early = sp.interpolate.interp1d(time, del_steady_early)
+    f2_early = sp.interpolate.interp1d(time, k_sum_early)
+    steady_interp_early = f1_early(time_new)
+    k_sum_interp_early = f2_early(time_new)
 
-        f1_twostep = sp.interpolate.interp1d(time, del_steady_two_step)
-        f2_twostep = sp.interpolate.interp1d(time, k_sum_twostep)
-        steady_interp_twostep = f1_twostep(time_new)
-        k_sum_interp_twostep = f2_twostep(time_new)
+    f1_twostep = sp.interpolate.interp1d(time, del_steady_two_step)
+    f2_twostep = sp.interpolate.interp1d(time, k_sum_twostep)
+    steady_interp_twostep = f1_twostep(time_new)
+    k_sum_interp_twostep = f2_twostep(time_new)
 
-        dW_middle = np.add(np.subtract(Wo, steady_interp) * np.exp(-np.multiply(time_new, k_sum_interp)), steady_interp)
-        dW_early = np.add(np.subtract(Wo, steady_interp_early) * np.exp(-np.multiply(time_new, k_sum_interp_early)),
-                          steady_interp_early)
-        dW_late = np.add(np.subtract(Wo, steady_interp_late) * np.exp(-np.multiply(time_new, k_sum_interp_late)),
-                         steady_interp_late)
-        dW_twostep = np.add(
-            np.subtract(Wo, steady_interp_twostep) * np.exp(-np.multiply(time_new, k_sum_interp_twostep)),
-            steady_interp_twostep)
+    dW_middle = np.add(np.subtract(Wo, steady_interp) * np.exp(-np.multiply(time_new, k_sum_interp)), steady_interp)
+    dW_early = np.add(np.subtract(Wo, steady_interp_early) * np.exp(-np.multiply(time_new, k_sum_interp_early)),
+                      steady_interp_early)
+    dW_late = np.add(np.subtract(Wo, steady_interp_late) * np.exp(-np.multiply(time_new, k_sum_interp_late)),
+                     steady_interp_late)
+    dW_twostep = np.add(np.subtract(Wo, steady_interp_twostep) * np.exp(-np.multiply(time_new, k_sum_interp_twostep)),
+                        steady_interp_twostep)
 
     return dW_early, dW_middle, dW_late, dW_twostep, time_new
