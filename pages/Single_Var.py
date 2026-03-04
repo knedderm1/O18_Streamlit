@@ -79,6 +79,12 @@ model = st.radio(
     "Select a model",
     ["Muelenbach", "Gregory"]
 )
+if st.button("Reset"):
+    defaults = reset(model)
+    st.session_state.param_values = np.array(defaults, dtype=float)
+    for i, val in enumerate(defaults):
+        st.session_state[f"param_{i}"] = val
+
 with st.form("parameters_form"):
     st.header("Model Parameters")
 
@@ -102,12 +108,6 @@ with st.form("parameters_form"):
             "Cont. Weathering Fract.": 2,
             "High + Low Seafloor Fract.": 3
         }
-
-    if st.button("Reset"):
-        defaults = np.array(reset(model), dtype=float)
-        st.session_state.param_values = defaults
-        for label, idx in parameter_options.items():
-            st.session_state[f"param_{idx}"] = float(defaults[idx])
     st.write("Enter integer values for each parameter:")
 
     cols = st.columns(2)
@@ -120,9 +120,9 @@ with st.form("parameters_form"):
             label,
             min_value=-9999.0,
             max_value=9999.0,
-            value=float(st.session_state.param_values[idx]),  # <- use session_state directly
+            value=float(st.session_state.param_values[idx]),
             step=1.0,
-            key=f"param_{idx}",
+            # no key= here
         )
     submitted = st.form_submit_button("Run Simulation")
 
