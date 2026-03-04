@@ -44,9 +44,9 @@ def run_gregory(parms):
         del_WR = 7
         del_graniteo = np.linspace(7.8, 7.8, num=num_steps)
         del_basalto = 5.5
-        delt_weath = parms[3]
+        delt_weath = parms[2]
         Delt_hiT = 4.1
-        delt_hi_and_l = parms[2]
+        delt_hi_and_l = parms[3]
         k_weath = parms[0]  # 1/k = 420
         k_hi_lo_t = parms[1]  # .016 includes hi and low temp thermal weath.
         # delt_hi_and_l = 4.7
@@ -262,3 +262,4 @@ def run_Muelenbach(parms):
                         steady_interp_twostep)
 
     return dW_early, dW_middle, dW_late, dW_twostep, time_new
+
