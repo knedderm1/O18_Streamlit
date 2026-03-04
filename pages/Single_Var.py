@@ -61,13 +61,21 @@ def reset(model):
         delt_hi_and_l = Delt_lowT - Delt_hiT
         k_weath = .24  # 1/k = 420
         k_hi_lo_t = 1.6  # .016 includes hi and low temp thermal weath.
-        parms = [k_weath, k_hi_lo_t, delt_weath, delt_hi_and_l]
+        parms = [k_weath, k_hi_lo_t, delt_weath, delt_hi_and_l, 0, 0, 0, 0, 0, 0]
     return parms
+
+def on_model_change():
+    st.session_state.param_values = np.array(reset(st.session_state.current_model), dtype=float)
+    # Remove old per-param keys to prevent stale keys
+    for key in list(st.session_state.keys()):
+        if key.startswith("param_"):
+            del st.session_state[key]
 
 parms = {}
 parms = reset("Muelenbach")
 param_values = np.array(parms, dtype=float)
 st.session_state.setdefault("param_values", param_values)
+st.session_state.current_model = "Muelenbach"
 
 st.set_page_config(page_title="Variable Graph", page_icon="📈")
 
