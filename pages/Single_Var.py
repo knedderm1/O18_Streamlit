@@ -120,9 +120,9 @@ with st.form("parameters_form"):
             label,
             min_value=-9999.0,
             max_value=9999.0,
-            value=float(st.session_state.param_values[idx]),
+            value=float(st.session_state.param_values[idx]),  # <- use session_state directly
             step=1.0,
-            # no key= here
+            key=f"param_{idx}",
         )
     submitted = st.form_submit_button("Run Simulation")
 
@@ -132,7 +132,7 @@ if submitted:
         print("SUBMIT" + str(st.session_state.param_values))
         parms = working_values
         if (model=="Gregory"):
-            mw.run_gregory(parms)
+            early,middle, late, twostep, time_new = mw.run_gregory(parms)
         else:
             early, middle, late, twostep, time_new = mw.run_Muelenbach(parms)
         fig, ax = plt.subplots(figsize=(12, 6))
