@@ -79,12 +79,14 @@ model = st.radio(
     "Select a model",
     ["Muelenbach", "Gregory"]
 )
+
 if "current_model" not in st.session_state:
     st.session_state.current_model = model
+    st.session_state.param_values = np.array(reset(model), dtype=float)
 
-if model != st.session_state.current_model:
-    defaults = reset(model)
-    st.session_state.param_values = np.array(defaults, dtype=float)
+if st.session_state.current_model != model:
+    st.session_state.param_values = np.array(reset(model), dtype=float)
+    st.session_state.current_model = model
 
     # Clear old parameter keys
     for key in list(st.session_state.keys()):
