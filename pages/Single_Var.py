@@ -65,10 +65,9 @@ def reset(model):
     return parms
 
 def on_model_change():
-    defaults = reset(model)
+    new_model = st.session_state.current_model  # ← read from session_state, not `model`
+    defaults = reset(new_model)
     st.session_state.param_values = np.array(defaults, dtype=float)
-    for i, val in enumerate(defaults):
-        st.session_state[f"param_{i}"] = val
 
 parms = {}
 parms = reset("Muelenbach")
