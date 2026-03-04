@@ -64,18 +64,10 @@ def reset(model):
         parms = [k_weath, k_hi_lo_t, delt_weath, delt_hi_and_l, 0, 0, 0, 0, 0, 0]
     return parms
 
-def on_model_change():
-    st.session_state.param_values = np.array(reset(st.session_state.current_model), dtype=float)
-    # Remove old per-param keys to prevent stale keys
-    for key in list(st.session_state.keys()):
-        if key.startswith("param_"):
-            del st.session_state[key]
-
 parms = {}
 parms = reset("Muelenbach")
 param_values = np.array(parms, dtype=float)
 st.session_state.setdefault("param_values", param_values)
-st.session_state.current_model = "Muelenbach"
 
 st.set_page_config(page_title="Variable Graph", page_icon="📈")
 
@@ -87,11 +79,6 @@ model = st.radio(
     "Select a model",
     ["Muelenbach", "Gregory"]
 )
-if st.button("Reset"):
-    defaults = reset(model)
-    st.session_state.param_values = np.array(defaults, dtype=float)
-    for i, val in enumerate(defaults):
-        st.session_state[f"param_{i}"] = val
 with st.form("parameters_form"):
     st.header("Model Parameters")
 
@@ -115,6 +102,12 @@ with st.form("parameters_form"):
             "Cont. Weathering Fract.": 2,
             "High + Low Seafloor Fract.": 3
         }
+
+    if st.button("Reset"):
+        defaults = np.array(reset(model), dtype=float)
+        st.session_state.param_values = defaults
+        for label, idx in parameter_options.items():
+            st.session_state[f"param_{idx}"] = float(defaults[idx])
     st.write("Enter integer values for each parameter:")
 
     cols = st.columns(2)
